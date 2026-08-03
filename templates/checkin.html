@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}AeroTrack | Check-In{% endblock %}
+
+{% block content %}
+<section class="section">
+    <p class="eyebrow">CHECK-IN DESK</p>
+    <h1 class="page-title">Issue Baggage Tag</h1>
+
+    <div class="checkin-grid">
+        <form class="checkin-form" method="POST" action="{{ url_for('checkin') }}">
+            <div class="form-row">
+                <div class="field">
+                    <label>PASSENGER NAME</label>
+                    <input type="text" name="passenger_name" placeholder="e.g. Elena Ross" required>
+                </div>
+                <div class="field">
+                    <label>FLIGHT NUMBER</label>
+                    <input type="text" name="flight_number" placeholder="e.g. AT204" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="field">
+                    <label>ORIGIN</label>
+                    <select name="origin">
+                        {% for code, name in airports %}
+                        <option value="{{ code }}|{{ name }}" {{ 'selected' if code == 'JFK' else '' }}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label>DESTINATION</label>
+                    <select name="destination">
+                        {% for code, name in airports %}
+                        <option value="{{ code }}|{{ name }}" {{ 'selected' if code == 'LHR' else '' }}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="field">
+                    <label>AIRLINE</label>
+                    <input type="text" name="airline" value="AeroTrack Airways">
+                </div>
+                <div class="field">
+                    <label>WEIGHT (KG)</label>
+                    <input type="number" step="0.1" name="weight" placeholder="e.g. 18.5" required>
+                </div>
+            </div>
+
+            <label class="checkbox-row">
+                <input type="checkbox" name="priority_handling">
+                <span class="checkbox-box"></span>
+                PRIORITY HANDLING
+            </label>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-white">+ GENERATE TAG</button>
+                {% if generated %}
+                <a href="{{ url_for('checkin') }}" class="btn btn-outline">&#8634; NEW</a>
+                {% endif %}
+            </div>
+        </form>
+
+        <div class="tag-preview-wrap">
+            <p class="eyebrow">{{ 'TAG GENERATED' if generated else 'TAG PREVIEW' }}</p>
+
+            {% if generated %}
+            <div class="tag-card">
+                <div class="tag-card-head">
+                    <span class="brand-icon-small">&#9992; AERO&#47;&#47;TRACK</span>
+                    <span class="tag-airline">{{ generated.airline | upper }}</span>
+                </div>
+                <div class="tag-card-body">
+                    <div class="tag-row">
+                        <div>
+                            <span class="meta-label">PASSENGER</span>
+                            <div class="tag-big">{{ generated.passenger_name }}</div>
+                        </div>
+                        <div class="tag-right">
+                            <span class="meta-label">FLIGHT</span>
+                            <div class="tag-big">{{ generated.flight_number }}</div>
+                        </div>
+                    </div>
+                    <div class="tag-route">
+                        <div>
+                            <div class="tag-code">{{ generated.origin_code }}</div>
+                            <div class="tag-airport">{{ generated.origin_name }}</div>
+                        </div>
+                        <div class="route-line"><span>&#9992;</span></div>
+                        <div class="tag-right">
+                            <div class="tag-code">{{ generated.destination_code }}</div>
+                            <div class="tag-airport">{{ generated.destination_name }}</div>
+                        </div>
+                    </div>
+                    <canvas class="barcode" id="barcode" width="440" height="70" data-seed="{{ generated.tag_id }}"></canvas>
+                    <div class="tag-row">
+                        <div class="tag-id">{{ generated.tag_id }}</div>
+                        <div class="tag-right tag-weight">{{ generated.weight }} KG</div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="tag-empty">
+                <p>No tag yet</p>
+                <span>Complete the form to generate a printable baggage tag with a unique scannable ID.</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% if generated %}
+<div class="toast">
+    <span class="toast-icon">&#9989;</span> Tag {{ generated.tag_id }} issued
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const canvas = document.getElementById("barcode");
+    if (canvas) drawBarcode(canvas, canvas.dataset.seed);
+    const toast = document.querySelector(".toast");
+    if (toast) setTimeout(() => toast.classList.add("hide"), 3500);
+});
+</script>
+{% endblock %}

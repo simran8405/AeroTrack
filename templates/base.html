@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}AeroTrack{% endblock %}</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="{{ url_for('track') }}" class="brand">
+        <span class="brand-icon">&#9992;</span>
+        <span>AERO&#47;&#47;TRACK</span>
+    </a>
+
+    <div class="nav-links">
+        <a href="{{ url_for('track') }}" class="nav-link {{ 'active' if request.endpoint in ['track','track_search','track_result'] else '' }}">
+            TRACK {% if request.endpoint in ['track','track_search','track_result'] %}<span class="dot">&#8226;</span>{% endif %}
+        </a>
+        <a href="{{ url_for('operations') }}" class="nav-link {{ 'active' if request.endpoint in ['operations','advance_baggage','flag_baggage'] else '' }}">
+            OPERATIONS {% if request.endpoint in ['operations','advance_baggage','flag_baggage'] %}<span class="dot">&#8226;</span>{% endif %}
+        </a>
+        <a href="{{ url_for('checkin') }}" class="nav-link {{ 'active' if request.endpoint == 'checkin' else '' }}">
+            CHECK-IN {% if request.endpoint == 'checkin' %}<span class="dot">&#8226;</span>{% endif %}
+        </a>
+        <a href="{{ url_for('lostfound') }}" class="nav-link {{ 'active' if request.endpoint == 'lostfound' else '' }}">
+            LOST &amp; FOUND {% if request.endpoint == 'lostfound' %}<span class="dot">&#8226;</span>{% endif %}
+        </a>
+    </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

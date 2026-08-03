@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}AeroTrack | Edit{% endblock %}
+
+{% block content %}
+<section class="section">
+    <p class="eyebrow">EDIT RECORD</p>
+    <h1 class="page-title">Edit Baggage</h1>
+
+    {% if bag %}
+    <form class="checkin-form" style="max-width:520px; margin-top:30px;" method="POST" action="{{ url_for('update_baggage', id=bag._id) }}">
+        <div class="field" style="margin-bottom:20px;">
+            <label>PASSENGER NAME</label>
+            <input type="text" name="passenger_name" value="{{ bag.passenger_name }}">
+        </div>
+        <div class="field" style="margin-bottom:20px;">
+            <label>FLIGHT NUMBER</label>
+            <input type="text" name="flight_number" value="{{ bag.flight_number }}">
+        </div>
+        <div class="field" style="margin-bottom:20px;">
+            <label>WEIGHT (KG)</label>
+            <input type="text" name="weight" value="{{ bag.weight }}">
+        </div>
+        <div class="field" style="margin-bottom:24px;">
+            <label>STATUS</label>
+            <input type="text" name="status" value="{{ bag.status }}">
+        </div>
+        <button type="submit" class="btn btn-white">SAVE CHANGES</button>
+    </form>
+    {% else %}
+    <p class="hero-sub">Bag not found.</p>
+    {% endif %}
+</section>
+{% endblock %}

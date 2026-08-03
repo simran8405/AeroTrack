@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}AeroTrack | Track{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="hero-inner">
+        <p class="eyebrow">SMART BAGGAGE INTELLIGENCE</p>
+        <h1 class="hero-title">
+            Track every bag.<br>
+            <span class="dim">Down to the second.</span>
+        </h1>
+        <p class="hero-sub">
+            Precision tracking from check-in to carousel. Enter your baggage tag ID to see a
+            real-time, machine-accurate status timeline of your luggage across the globe.
+        </p>
+
+        <form class="track-form" action="{{ url_for('track_search') }}" method="POST">
+            <div class="search-box">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" name="tag_id" placeholder="Enter tag ID e.g. BG10000001" value="{{ query }}" autocomplete="off">
+            </div>
+            <button type="submit" class="btn btn-white">TRACK <span class="arrow">&#8594;</span></button>
+        </form>
+
+        <p class="demo-hint">Try demo tag &#8594; <a href="{{ url_for('track_result', tag_id='BG10000001') }}">BG10000001</a></p>
+    </div>
+</section>
+
+{% if query %}
+<section class="section result-section">
+    {% if bag %}
+        <div class="result-card">
+            <div class="result-head">
+                <div>
+                    <p class="eyebrow">TAG {{ bag.tag_id }}</p>
+                    <h2>{{ bag.passenger_name }}</h2>
+                </div>
+                <span class="status-pill {{ 'status-alert' if bag.status == 'Mishandled' else '' }}">
+                    <span class="pill-dot"></span>{{ bag.status | upper }}
+                </span>
+            </div>
+
+            <div class="result-meta">
+                <div><span class="meta-label">FLIGHT</span><span>{{ bag.flight_number }}</span></div>
+                <div><span class="meta-label">ROUTE</span><span>{{ bag.origin_code }} &#8594; {{ bag.destination_code }}</span></div>
+                <div><span class="meta-label">AIRLINE</span><span>{{ bag.airline }}</span></div>
+                <div><span class="meta-label">WEIGHT</span><span>{{ bag.weight }} KG</span></div>
+            </div>
+
+            <div class="timeline">
+                {% for event in bag.history|reverse %}
+                <div class="timeline-item {{ 'timeline-alert' if event.status == 'Mishandled' else '' }}">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-body">
+                        <span class="timeline-status">{{ event.status | upper }}</span>
+                        <span class="timeline-time">{{ event.time | fmt_time }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="result-card not-found">
+            <p class="eyebrow">NO RESULTS</p>
+            <h2>No bag found for tag "{{ error }}"</h2>
+            <p class="hero-sub">Double-check the tag ID, or try the demo tag BG10000001.</p>
+        </div>
+    {% endif %}
+</section>
+{% endif %}
+
+<section class="section">
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">&#9678;</div>
+            <h3>Real-Time Tracking</h3>
+            <p>Every scan event streamed to a precise vertical timeline — check-in to carousel.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128737;</div>
+            <h3>Mishandling Alerts</h3>
+            <p>Instant flags the moment a bag deviates from its expected route.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128337;</div>
+            <h3>On-Time Intelligence</h3>
+            <p>Operational analytics on throughput, delays and recovery for staff.</p>
+        </div>
+    </div>
+
+    <div class="cta-banner">
+        <div>
+            <h3>Airline &amp; airport staff?</h3>
+            <p>Access the operations dashboard, check-in desk and lost &amp; found console.</p>
+        </div>
+        <a href="{{ url_for('operations') }}" class="btn btn-outline">OPERATIONS CONSOLE <span class="arrow">&#8594;</span></a>
+    </div>
+</section>
+
+{% endblock %}

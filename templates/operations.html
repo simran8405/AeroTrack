@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}AeroTrack | Operations{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">OPERATIONS CONSOLE</p>
+            <h1 class="page-title">Baggage Command</h1>
+        </div>
+        <a href="{{ url_for('checkin') }}" class="btn btn-white">NEW CHECK-IN</a>
+    </div>
+
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">&#128188;</span><span class="live-tag">LIVE</span></div>
+            <div class="stat-value">{{ total_bags }}</div>
+            <div class="stat-label">TOTAL BAGS</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">&#9992;</span><span class="live-tag">LIVE</span></div>
+            <div class="stat-value">{{ in_transit }}</div>
+            <div class="stat-label">IN TRANSIT</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">&#9989;</span><span class="live-tag">LIVE</span></div>
+            <div class="stat-value">{{ claimed }}</div>
+            <div class="stat-label">CLAIMED</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">&#9888;</span><span class="live-tag">LIVE</span></div>
+            <div class="stat-value stat-alert">{{ mishandled }}</div>
+            <div class="stat-label">MISHANDLED</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">&#128200;</span><span class="live-tag">LIVE</span></div>
+            <div class="stat-value">{{ on_time_rate }}%</div>
+            <div class="stat-label">ON-TIME RATE</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-top"><span class="stat-icon">&#128220;</span><span class="live-tag">LIVE</span></div>
+            <div class="stat-value">{{ open_reports }}</div>
+            <div class="stat-label">OPEN REPORTS</div>
+        </div>
+    </div>
+
+    <div class="chart-grid">
+        <div class="chart-card">
+            <p class="chart-title">7-DAY THROUGHPUT</p>
+            <canvas id="throughputChart" height="220"></canvas>
+        </div>
+        <div class="chart-card">
+            <p class="chart-title">STATUS DISTRIBUTION</p>
+            <canvas id="distributionChart" height="220"></canvas>
+        </div>
+    </div>
+
+    <div class="registry">
+        <div class="registry-head">
+            <h2>Baggage Registry</h2>
+            <div class="filter-tabs">
+                <button class="tab active" data-filter="all">ALL</button>
+                <button class="tab" data-filter="In Transit">IN TRANSIT</button>
+                <button class="tab" data-filter="Checked In">CHECKED IN</button>
+                <button class="tab" data-filter="Claimed">CLAIMED</button>
+                <button class="tab" data-filter="Mishandled">MISHANDLED</button>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table class="registry-table">
+                <thead>
+                    <tr>
+                        <th>TAG ID</th>
+                        <th>PASSENGER</th>
+                        <th>FLIGHT</th>
+                        <th>ROUTE</th>
+                        <th>STATUS</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bag in bags %}
+                    <tr data-status="{{ bag.status }}">
+                        <td><a href="{{ url_for('track_result', tag_id=bag.tag_id) }}" class="tag-link">{{ bag.tag_id }} &#8250;</a></td>
+                        <td>{{ bag.passenger_name }}</td>
+                        <td>{{ bag.flight_number }}</td>
+                        <td>{{ bag.origin_code }} &#8594; {{ bag.destination_code }}</td>
+                        <td>
+                            <span class="status-pill {{ 'status-alert' if bag.status == 'Mishandled' else '' }}">
+                                <span class="pill-dot"></span>{{ bag.status | upper }}
+                            </span>
+                        </td>
+                        <td class="actions-cell">
+                            <form action="{{ url_for('advance_baggage', tag_id=bag.tag_id) }}" method="POST" class="inline-form">
+                                <button type="submit" class="btn-mini" {{ 'disabled' if bag.status in ('Claimed','Mishandled') else '' }}>ADVANCE</button>
+                            </form>
+                            <form action="{{ url_for('flag_baggage', tag_id=bag.tag_id) }}" method="POST" class="inline-form">
+                                <button type="submit" class="btn-flag" {{ 'disabled' if bag.status in ('Claimed','Mishandled') else '' }}>&#9873;</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" class="empty-row">No baggage checked in yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const throughputData = {{ throughput | tojson }};
+const distributionData = {{ distribution | tojson }};
+document.addEventListener("DOMContentLoaded", () => initOperationsCharts(throughputData, distributionData));
+</script>
+{% endblock %}

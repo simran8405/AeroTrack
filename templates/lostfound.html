@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}AeroTrack | Lost & Found{% endblock %}
+
+{% block content %}
+<section class="lf-hero">
+    <div class="lf-hero-inner">
+        <p class="eyebrow">RECOVERY DESK</p>
+        <h1 class="page-title">Lost &amp; Found</h1>
+        <p class="hero-sub">
+            File a mishandled, delayed or lost baggage report. Our recovery team tracks each case to resolution.
+        </p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="lf-grid">
+        <form class="lf-form" method="POST" action="{{ url_for('lostfound') }}">
+            <div class="form-row">
+                <div class="field">
+                    <label>FULL NAME</label>
+                    <input type="text" name="full_name" placeholder="e.g. Marcus Vale" required>
+                </div>
+                <div class="field">
+                    <label>CONTACT (EMAIL / PHONE)</label>
+                    <input type="text" name="contact" placeholder="you@mail.com" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="field">
+                    <label>TAG ID (OPTIONAL)</label>
+                    <input type="text" name="tag_id" placeholder="BG10000001">
+                </div>
+                <div class="field">
+                    <label>REPORT TYPE</label>
+                    <select name="report_type">
+                        {% for t in report_types %}
+                        <option value="{{ t }}">{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="field">
+                    <label>COLOR</label>
+                    <input type="text" name="color" placeholder="e.g. Charcoal">
+                </div>
+                <div class="field">
+                    <label>BRAND</label>
+                    <input type="text" name="brand" placeholder="e.g. Rimowa">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>DESCRIPTION</label>
+                <textarea name="description" rows="4" placeholder="Describe the bag and last known location..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-white">&#10148; FILE REPORT</button>
+        </form>
+
+        <div class="active-cases">
+            <h2>Active Cases</h2>
+            <div class="case-list">
+                {% for case in cases %}
+                <div class="case-card">
+                    <div class="case-head">
+                        <div>
+                            <div class="case-id">{{ case.case_id }}</div>
+                            <div class="case-type">{{ case.report_type }}</div>
+                        </div>
+                        <button class="btn-mini case-open">OPEN</button>
+                    </div>
+                    {% if case.description %}
+                    <p class="case-desc">{{ case.description }}</p>
+                    {% endif %}
+                    <div class="case-meta">
+                        <span>FILER &middot; {{ case.filer | upper }}</span>
+                        {% if case.tag_id %}<span>TAG &middot; {{ case.tag_id }}</span>{% endif %}
+                        {% if case.brand %}<span>BRAND &middot; {{ case.brand | upper }}</span>{% endif %}
+                        {% if case.color %}<span>COLOR &middot; {{ case.color | upper }}</span>{% endif %}
+                        <span>{{ case.created_at | fmt_time }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <p class="empty-row">No active cases yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
