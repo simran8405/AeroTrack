@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}AeroTrack | Edit Case{% endblock %}
+
+{% block content %}
+<section class="section">
+    <p class="eyebrow">RECOVERY DESK</p>
+    <h1 class="page-title">Edit Case {{ case.case_id if case else '' }}</h1>
+
+    {% if case %}
+    <form class="lf-form" style="max-width:640px; margin-top:30px;" method="POST" action="{{ url_for('edit_lostfound', case_id=case.case_id) }}">
+        <div class="form-row">
+            <div class="field">
+                <label>FULL NAME</label>
+                <input type="text" name="full_name" value="{{ case.filer }}" required>
+            </div>
+            <div class="field">
+                <label>CONTACT (EMAIL / PHONE)</label>
+                <input type="text" name="contact" value="{{ case.contact }}" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="field">
+                <label>TAG ID (OPTIONAL)</label>
+                <input type="text" name="tag_id" value="{{ case.tag_id }}">
+            </div>
+            <div class="field">
+                <label>REPORT TYPE</label>
+                <select name="report_type">
+                    {% for t in report_types %}
+                    <option value="{{ t }}" {{ 'selected' if t == case.report_type else '' }}>{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="field">
+                <label>COLOR</label>
+                <input type="text" name="color" value="{{ case.color }}">
+            </div>
+            <div class="field">
+                <label>BRAND</label>
+                <input type="text" name="brand" value="{{ case.brand }}">
+            </div>
+        </div>
+
+        <div class="field">
+            <label>DESCRIPTION</label>
+            <textarea name="description" rows="4">{{ case.description }}</textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-white">SAVE CHANGES</button>
+            <a href="{{ url_for('lostfound') }}" class="btn btn-outline">&#8634; CANCEL</a>
+        </div>
+    </form>
+    {% else %}
+    <p class="hero-sub">Case not found.</p>
+    {% endif %}
+</section>
+{% endblock %}

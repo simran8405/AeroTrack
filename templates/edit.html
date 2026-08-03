@@ -4,10 +4,10 @@
 {% block content %}
 <section class="section">
     <p class="eyebrow">EDIT RECORD</p>
-    <h1 class="page-title">Edit Baggage</h1>
+    <h1 class="page-title">Edit Baggage {{ bag.tag_id if bag else '' }}</h1>
 
     {% if bag %}
-    <form class="checkin-form" style="max-width:520px; margin-top:30px;" method="POST" action="{{ url_for('update_baggage', id=bag._id) }}">
+    <form class="checkin-form" style="max-width:520px; margin-top:30px;" method="POST" action="{{ url_for('edit_baggage_by_tag', tag_id=bag.tag_id) }}">
         <div class="field" style="margin-bottom:20px;">
             <label>PASSENGER NAME</label>
             <input type="text" name="passenger_name" value="{{ bag.passenger_name }}">
@@ -17,14 +17,24 @@
             <input type="text" name="flight_number" value="{{ bag.flight_number }}">
         </div>
         <div class="field" style="margin-bottom:20px;">
+            <label>AIRLINE</label>
+            <input type="text" name="airline" value="{{ bag.airline }}">
+        </div>
+        <div class="field" style="margin-bottom:24px;">
             <label>WEIGHT (KG)</label>
             <input type="text" name="weight" value="{{ bag.weight }}">
         </div>
-        <div class="field" style="margin-bottom:24px;">
-            <label>STATUS</label>
-            <input type="text" name="status" value="{{ bag.status }}">
+
+        <label class="checkbox-row" style="margin-bottom:24px;">
+            <input type="checkbox" name="priority_handling" {{ 'checked' if bag.priority_handling else '' }}>
+            <span class="checkbox-box"></span>
+            PRIORITY HANDLING
+        </label>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-white">SAVE CHANGES</button>
+            <a href="{{ url_for('operations') }}" class="btn btn-outline">&#8634; CANCEL</a>
         </div>
-        <button type="submit" class="btn btn-white">SAVE CHANGES</button>
     </form>
     {% else %}
     <p class="hero-sub">Bag not found.</p>

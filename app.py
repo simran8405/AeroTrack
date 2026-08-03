@@ -3,7 +3,6 @@ import string
 from datetime import datetime, timedelta
 
 from flask import Flask, render_template, request, redirect, url_for
-from bson.objectid import ObjectId
 
 from database import baggage_collection, lostfound_collection
 
@@ -204,6 +203,31 @@ def delete_baggage_by_tag(tag_id):
     return redirect(url_for("operations"))
 
 
+@app.route("/operations/edit/<tag_id>", methods=["GET", "POST"])
+def edit_baggage_by_tag(tag_id):
+    bag = baggage_collection.find_one({"tag_id": tag_id})
+
+    if bag is None:
+        return redirect(url_for("operations"))
+
+    if request.method == "POST":
+        baggage_collection.update_one(
+            {"tag_id": tag_id},
+            {
+                "$set": {
+                    "passenger_name": request.form.get("passenger_name", bag.get("passenger_name", "")),
+                    "flight_number": request.form.get("flight_number", bag.get("flight_number", "")),
+                    "weight": request.form.get("weight", bag.get("weight", "")),
+                    "airline": request.form.get("airline", bag.get("airline", "")),
+                    "priority_handling": bool(request.form.get("priority_handling")),
+                }
+            },
+        )
+        return redirect(url_for("operations"))
+
+    return render_template("edit.html", bag=bag)
+
+
 # =========================
 # CHECK-IN DESK
 # =========================
@@ -269,36 +293,47 @@ def lostfound():
     return render_template("lostfound.html", cases=cases, report_types=REPORT_TYPES)
 
 
-# =========================
-# LEGACY / EDIT (kept for compatibility)
-# =========================
+@app.route("/lostfound/edit/<case_id>", methods=["GET", "POST"])
+def edit_lostfound(case_id):
+    case = lostfound_collection.find_one({"case_id": case_id})
 
-@app.route("/edit/<id>")
-def edit_baggage(id):
-    bag = baggage_collection.find_one({"_id": ObjectId(id)})
-    return render_template("edit.html", bag=bag)
+    if case is None:
+        return redirect(url_for("lostfound"))
+
+    if request.method == "POST":
+        lostfound_collection.update_one(
+            {"case_id": case_id},
+            {
+                "$set": {
+                    "filer": request.form.get("full_name", case.get("filer", "")),
+                    "contact": request.form.get("contact", case.get("contact", "")),
+                    "tag_id": request.form.get("tag_id", "").strip().upper(),
+                    "report_type": request.form.get("report_type", case.get("report_type", "")),
+                    "color": request.form.get("color", ""),
+                    "brand": request.form.get("brand", ""),
+                    "description": request.form.get("description", ""),
+                }
+            },
+        )
+        return redirect(url_for("lostfound"))
+
+    return render_template("edit_lostfound.html", case=case, report_types=REPORT_TYPES)
 
 
-@app.route("/update/<id>", methods=["POST"])
-def update_baggage(id):
-    baggage_collection.update_one(
-        {"_id": ObjectId(id)},
-        {
-            "$set": {
-                "passenger_name": request.form["passenger_name"],
-                "flight_number": request.form["flight_number"],
-                "weight": request.form["weight"],
-                "status": request.form["status"],
-            }
-        },
+@app.route("/lostfound/status/<case_id>", methods=["POST"])
+def update_lostfound_status(case_id):
+    new_status = request.form.get("status", "Open")
+    lostfound_collection.update_one(
+        {"case_id": case_id},
+        {"$set": {"status": new_status}},
     )
-    return redirect(url_for("operations"))
+    return redirect(url_for("lostfound"))
 
 
-@app.route("/delete/<id>")
-def delete_baggage(id):
-    baggage_collection.delete_one({"_id": ObjectId(id)})
-    return redirect(url_for("operations"))
+@app.route("/lostfound/delete/<case_id>", methods=["POST"])
+def delete_lostfound(case_id):
+    lostfound_collection.delete_one({"case_id": case_id})
+    return redirect(url_for("lostfound"))
 
 
 # =========================

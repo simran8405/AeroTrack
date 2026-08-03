@@ -70,7 +70,9 @@
                             <div class="case-id">{{ case.case_id }}</div>
                             <div class="case-type">{{ case.report_type }}</div>
                         </div>
-                        <button class="btn-mini case-open">OPEN</button>
+                        <span class="status-pill {{ 'status-alert' if case.status == 'Closed' else '' }}">
+                            <span class="pill-dot"></span>{{ case.status | upper }}
+                        </span>
                     </div>
                     {% if case.description %}
                     <p class="case-desc">{{ case.description }}</p>
@@ -81,6 +83,20 @@
                         {% if case.brand %}<span>BRAND &middot; {{ case.brand | upper }}</span>{% endif %}
                         {% if case.color %}<span>COLOR &middot; {{ case.color | upper }}</span>{% endif %}
                         <span>{{ case.created_at | fmt_time }}</span>
+                    </div>
+                    <div class="case-actions actions-cell">
+                        <a href="{{ url_for('edit_lostfound', case_id=case.case_id) }}" class="btn-mini">EDIT</a>
+                        <form action="{{ url_for('update_lostfound_status', case_id=case.case_id) }}" method="POST" class="inline-form">
+                            <select name="status" onchange="this.form.submit()">
+                                <option value="Open" {{ 'selected' if case.status == 'Open' else '' }}>OPEN</option>
+                                <option value="Investigating" {{ 'selected' if case.status == 'Investigating' else '' }}>INVESTIGATING</option>
+                                <option value="Resolved" {{ 'selected' if case.status == 'Resolved' else '' }}>RESOLVED</option>
+                                <option value="Closed" {{ 'selected' if case.status == 'Closed' else '' }}>CLOSED</option>
+                            </select>
+                        </form>
+                        <form action="{{ url_for('delete_lostfound', case_id=case.case_id) }}" method="POST" class="inline-form" onsubmit="return confirm('Delete case {{ case.case_id }}? This cannot be undone.');">
+                            <button type="submit" class="btn-delete">&#128465;</button>
+                        </form>
                     </div>
                 </div>
                 {% else %}

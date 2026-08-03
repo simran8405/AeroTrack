@@ -92,6 +92,7 @@
                             </span>
                         </td>
                         <td class="actions-cell">
+                            <a href="{{ url_for('edit_baggage_by_tag', tag_id=bag.tag_id) }}" class="btn-mini">EDIT</a>
                             <form action="{{ url_for('advance_baggage', tag_id=bag.tag_id) }}" method="POST" class="inline-form">
                                 <button type="submit" class="btn-mini" {{ 'disabled' if bag.status in ('Claimed','Mishandled') else '' }}>ADVANCE</button>
                             </form>
