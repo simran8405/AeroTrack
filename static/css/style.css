@@ -543,11 +543,15 @@ input, select, textarea { font-family: var(--mono); }
 
 /* ============ LOST & FOUND ============ */
 .lf-hero {
+    position: relative;
     padding: 60px 40px;
     border-bottom: 1px solid var(--border-soft);
-    background:
-        linear-gradient(90deg, var(--bg) 45%, rgba(255,255,255,0.03) 100%),
-        var(--bg);
+    background-image:
+        linear-gradient(90deg, rgba(6,6,6,0.90) 40%, rgba(6,6,6,0.75) 100%),
+        url("/static/images/lostbag.jpeg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .lf-hero-inner { max-width: 640px; }
