@@ -413,6 +413,17 @@ input, select, textarea { font-family: var(--mono); }
 .btn-flag:hover:not(:disabled) { background: var(--alert-bg); }
 .btn-flag:disabled { color: var(--text-faint); border-color: var(--border-soft); cursor: not-allowed; }
 
+.btn-delete {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 8px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.btn-delete:hover { background: var(--alert-bg); border-color: rgba(255,77,77,0.35); color: var(--alert); }
+
 .empty-row { text-align: center; color: var(--text-faint); padding: 40px 0 !important; }
 
 /* ============ CHECK-IN ============ */

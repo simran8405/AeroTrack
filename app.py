@@ -198,6 +198,12 @@ def flag_baggage(tag_id):
     return redirect(url_for("operations"))
 
 
+@app.route("/operations/delete/<tag_id>", methods=["POST"])
+def delete_baggage_by_tag(tag_id):
+    baggage_collection.delete_one({"tag_id": tag_id})
+    return redirect(url_for("operations"))
+
+
 # =========================
 # CHECK-IN DESK
 # =========================
