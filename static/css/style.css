@@ -1,6 +1,6 @@
 :root {
     --bg: #0c0a00;
-    --bg-soft: #0c0a00;
+    --bg-soft: #1fd1b;
     --border: rgba(255, 255, 255, 0.12);
     --border-soft: rgba(255, 255, 255, 0.07);
     --text: #f2f2f2;
@@ -67,7 +67,49 @@ input, select, textarea { font-family: var(--mono); }
     letter-spacing: 0.02em;
 }
 
-.brand-icon { font-size: 18px; transform: rotate(45deg); display: inline-block; }
+.brand-icon {
+    font-size: 18px;
+    display: inline-block;
+    position: relative;
+    transform: rotate(45deg);
+    animation: plane-bob 3.2s ease-in-out infinite;
+    will-change: transform;
+}
+
+.brand-icon::before {
+    content: "";
+    position: absolute;
+    top: 55%;
+    right: 100%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55));
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: width 0.35s ease, opacity 0.35s ease;
+    pointer-events: none;
+}
+
+.brand:hover .brand-icon {
+    animation: plane-zoom 0.7s ease-in-out;
+}
+
+.brand:hover .brand-icon::before {
+    width: 16px;
+    opacity: 1;
+}
+
+@keyframes plane-bob {
+    0%, 100% { transform: rotate(45deg) translateY(0); }
+    50%      { transform: rotate(38deg) translateY(-3px); }
+}
+
+@keyframes plane-zoom {
+    0%   { transform: rotate(45deg) translate(0, 0) scale(1); }
+    35%  { transform: rotate(28deg) translate(7px, -7px) scale(1.25); }
+    100% { transform: rotate(45deg) translate(0, 0) scale(1); }
+}
+
 
 .nav-links { display: flex; gap: 36px; }
 
@@ -574,11 +616,13 @@ input, select, textarea { font-family: var(--mono); }
 
 .case-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; color: var(--text-faint); }
 
+.case-actions { flex-wrap: wrap; row-gap: 10px; }
+
 /* ============ RESPONSIVE ============ */
 @media (max-width: 960px) {
     .navbar { padding: 18px 20px; flex-wrap: wrap; gap: 14px; }
     .nav-links { gap: 18px; flex-wrap: wrap; }
-    .hero, .section { padding-left: 20px; padding-right: 20px; }
+    .hero, .lf-hero, .section { padding-left: 20px; padding-right: 20px; }
     .feature-grid { grid-template-columns: 1fr; }
     .stat-grid { grid-template-columns: repeat(2, 1fr); }
     .chart-grid { grid-template-columns: 1fr; }
@@ -586,4 +630,63 @@ input, select, textarea { font-family: var(--mono); }
     .form-row { grid-template-columns: 1fr; }
     .result-meta { grid-template-columns: repeat(2, 1fr); }
     .tag-preview-wrap { position: static; }
+    .table-wrap { -webkit-overflow-scrolling: touch; }
+}
+
+/* ---- Phone-width refinements ---- */
+@media (max-width: 640px) {
+    /* Prevent iOS Safari from auto-zooming into forms on focus */
+    .field input, .field select, .field textarea, .search-box input { font-size: 16px; }
+
+    .navbar { padding: 14px 16px; }
+    .brand { font-size: 15px; }
+    .nav-links { gap: 12px 16px; width: 100%; justify-content: flex-start; }
+    .nav-link { font-size: 11px; }
+
+    .hero { padding: 60px 16px 44px; }
+    .hero-title { font-size: clamp(30px, 10vw, 84px); }
+    .hero-sub { font-size: 14px; }
+
+    .lf-hero { padding: 40px 16px; }
+
+    .section { padding: 40px 16px; }
+    .page-title { font-size: 30px; }
+
+    .track-form { flex-direction: column; align-items: stretch; }
+    .search-box { min-width: 0; width: 100%; }
+    .track-form .btn { justify-content: center; width: 100%; }
+
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .stat-card { padding: 18px 16px; }
+    .stat-value { font-size: 28px; }
+
+    .result-meta { grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .registry-head h2, .active-cases h2 { font-size: 20px; }
+    .filter-tabs { width: 100%; }
+    .tab { flex: 1 1 auto; text-align: center; padding: 10px 8px; }
+
+    .actions-cell, .case-actions { gap: 10px; }
+    .btn-mini { padding: 10px 14px; font-size: 11px; }
+    .btn-flag, .btn-delete { padding: 10px 12px; }
+
+    .case-card { padding: 18px; }
+    .case-type { font-size: 16px; }
+
+    .cta-banner { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+    .cta-banner .btn { width: 100%; justify-content: center; }
+
+    .toast {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+@media (max-width: 420px) {
+    .stat-grid { grid-template-columns: 1fr; }
+    .result-meta { grid-template-columns: 1fr; }
+    .hero-title { font-size: clamp(26px, 11vw, 84px); }
 }
