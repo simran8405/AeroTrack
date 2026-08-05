@@ -498,6 +498,15 @@ input, select, textarea { font-family: var(--mono); }
 
 .field select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--text-dim) 50%), linear-gradient(135deg, var(--text-dim) 50%, transparent 50%); background-position: calc(100% - 20px) center, calc(100% - 15px) center; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
 
+/* Most browsers render the open <option> list with their own white
+   background and ignore the dark theme, which leaves light text
+   unreadable until an option is hovered. Force dark-on-white here so
+   the list is legible regardless of the closed select's styling. */
+.field select option {
+    color: #141414;
+    background-color: #ffffff;
+}
+
 .checkbox-row {
     display: flex;
     align-items: center;
